@@ -1,0 +1,46 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_DB: lastproject
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Shays123_4??
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./init/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d lastproject" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+  backend:
+    build:
+      context: ./lastproject/lastproject
+    ports:
+      - "9090:9090"
+    depends_on:
+      - db
+      - redis
+    environment:
+      REDIS_HOST: redis
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/lastproject
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: Shays123_4??
+      
+  frontend:
+    build:
+      context: ./my-app
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
