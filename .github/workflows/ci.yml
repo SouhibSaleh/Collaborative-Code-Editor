@@ -46,7 +46,7 @@ jobs:
     - name: Build with Maven
       working-directory: ./lastproject/lastproject
       run: ./mvnw clean install
-      
+        
     - name: Build and test backend
       run: |
         cd lastproject/lastproject
@@ -57,3 +57,14 @@ jobs:
         cd my-app
         npm install
         npm run build
+
+ 
+    - name: Build and Save Backend Docker Image
+      run: |
+        docker build -t suhib/backend:latest ./lastproject/lastproject
+        docker save suhib/backend:latest -o backend-image.tar.gz
+
+    - name: Build and Save Frontend Docker Image
+      run: |
+        docker build -t suhib/frontend:latest ./my-app
+        docker save suhib/frontend:latest -o frontend-image.tar.gz
